@@ -44,9 +44,8 @@ many_entries = [
     ('2021-01-05', '004', 1, 1.5 )
 ]
 
-
 cursor.executemany("INSERT INTO sensor_data (timestamp, device_id, device_status, value) VALUES (?, ?, ?, ?)", many_entries)
 
-print("Added rows to the database")
+print(f"Added {cursor.rowcount} rows to the database")
 
 connection.commit()
