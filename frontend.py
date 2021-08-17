@@ -1,3 +1,4 @@
+from eda import bivariate_plot
 from visualize import visualize_data
 from sensor_dataframe import generate_stats, return_df_from_db, transform_df
 import numpy as np
@@ -15,6 +16,9 @@ dataset_base = st.container()
 dataset_stats = st.container()
 
 visualizations = st.container()
+
+eda = st.container()
+
 
 features = st.container()
 
@@ -42,21 +46,53 @@ with header:
     """)
 
 with dataset_base:
-    st.header("Sensor dataset head")
+    st.header('''
+    Sensor dataset 
+    This is a sample of the data present in the database.
+    Only the first few rows are shown.
+    ''')
     st.write(data_df.head())
 
 with dataset_stats:
-    st.header("Sensor-wise dataset summary")
+    st.header('''
+    Sensor-wise dataset summary
+    These are sample statistics generated for each sensor
+    Key statistics generated are mean, median, standard deviation, kurtosis and skewness.
+    ''')
     st.write(sensor_wise_stats)
 
 with visualizations:
-    st.header("Visualizations of the sensor data")
+    st.header('''
+    Visualizations of the sensor data - univariate analysis
+    ''')
     kind = st.selectbox(f"Specify the kind of visualization you'd like to see for the features",
                     ("run chart", "histogram"))
     plots = visualize_data(data_df, metric_columns, kind)
     for plot_id, plot in plots.items():
         st.subheader(f"Visualization for sensor id: {plot_id}")
         st.pyplot(plot)
+
+with eda:
+    st.header('''
+    Exploratory data analysis
+    This section can display joint density plots, and other kinds of charts
+    Correlation analysis may also be performed here.
+    ''')
+    eda_type = st.selectbox(f"Specify kind of bivariate plot",
+                            ("joint density plot", "scatter plot"))
+    first = st.selectbox(f"Specify first variable",
+                            metric_columns)
+    second = st.selectbox(f"Specify second variable",
+                            metric_columns)
+
+    if first == second:
+        st.write("Warning: Different variables should be selected to see a bivariate analysis")
+    else:
+        st.subheader(f"{eda_type} visualization for {second} vs {first}")
+        eda_plot = bivariate_plot(data_df, first, second, eda_type)
+        st.pyplot(eda_plot)
+
+
 
 with features:
     st.header("Feature engineering options")
