@@ -34,7 +34,11 @@ plots = visualize_data(data_df)
 # Display on streamlit
 
 with header:
-    st.title("Turbine: Sensor Data Analytics Application")
+    st.title("""
+    # Turbine: Sensor Data Analytics Application
+    A simple application for end-to-end machine learning.
+    
+    """)
 
 with dataset_base:
     st.header("Sensor dataset head")
