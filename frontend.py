@@ -1,5 +1,6 @@
 from visualize import visualize_data
-from sensor_dataframe import generate_stats, return_df_from_db
+from sensor_dataframe import generate_stats, return_df_from_db, transform_df
+import numpy as np
 import pandas as pd
 import streamlit as st
 import matplotlib.pyplot as plt
@@ -26,10 +27,10 @@ model_saving = st.container()
 # Retrieve data from database and compute statistics
 
 data_df = return_df_from_db()
+metric_columns = ['x1', 'x2', 'target']
 
-sensor_wise_stats = generate_stats(data_df)
+sensor_wise_stats = generate_stats(data_df, metric_columns)
 
-plots = visualize_data(data_df)
 
 # Display on streamlit
 
@@ -46,6 +47,26 @@ with dataset_stats:
 
 with visualizations:
     st.header("Visualizations of the sensor data")
-    for sensor_id, plot in plots.items():
-        st.subheader(f"Visualization for sensor id: {sensor_id}")
+    kind = st.selectbox(f"Specify the kind of visualization you'd like to see for the features",
+                    ("run chart", "histogram"))
+    plots = visualize_data(data_df, metric_columns, kind)
+    for plot_id, plot in plots.items():
+        st.subheader(f"Visualization for sensor id: {plot_id}")
         st.pyplot(plot)
+
+with features:
+    st.header("Feature engineering options")
+    transforms = {}
+    for col in metric_columns:
+        transformation = st.selectbox(f"Select the transform for {col}", 
+                                      ("none", "log", "sqrt", "exp"))
+        transforms.update({col: transformation})
+    
+    transformed_df = transform_df(data_df, transforms)
+    st.subheader("Transformed dataframe (sample)")
+    st.write(transformed_df.sample(10))
+        
+    
+    
+
+    
