@@ -30,7 +30,6 @@ def visualize_data(sensor_df, metric_columns, kind):
                 plt.title(f"Histogram for {metric_column} sensor id: {sensor_id}")
                 plt.hist(device_wise_df[sensor_id][metric_column], bins = 20)
 
-
     print(plots)
     return plots
 
