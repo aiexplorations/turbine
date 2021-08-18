@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS sensor_data
     target REAL
 )""")
 
-SIZE = 1000
+SIZE = 10000
 
 x1 = np.random.normal(loc = 10, scale= 2, size=SIZE)
 x2 = np.random.normal(loc = 10, scale= 3, size=SIZE)
@@ -46,7 +46,7 @@ many_records_df = pd.DataFrame({
 
 many_entries = many_records_df.to_records(index=False).tolist()
 
-print(many_entries)
+#print(many_entries)
 
 '''
 many_entries = [
