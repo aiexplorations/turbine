@@ -32,14 +32,14 @@ model_saving = st.container()
 
 data_df = return_df_from_db()
 metric_columns = ['x1', 'x2', 'target']
-
+sensor_ids = data_df['device_id'].unique().tolist()
 sensor_wise_stats = generate_stats(data_df, metric_columns)
 
 
 # Display on streamlit
 
 with header:
-    st.title("""
+    st.markdown("""
     # Turbine: Sensor Data Analytics Application
     A simple application for end-to-end machine learning.
     
@@ -48,8 +48,9 @@ with header:
 with dataset_base:
     st.header('''
     Sensor dataset 
-    This is a sample of the data present in the database.
-    Only the first few rows are shown.
+    **Note:**
+    * This is a sample of the data present in the database.
+    * Only the first few rows are shown.
     ''')
     st.write(data_df.head())
 
@@ -65,12 +66,18 @@ with visualizations:
     st.header('''
     Visualizations of the sensor data - univariate analysis
     ''')
-    kind = st.selectbox(f"Specify the kind of visualization you'd like to see for the features",
+    sel_viz, disp_viz = st.columns(2)
+    
+    sensor = sel_viz.selectbox(f"Specify the sensor to be visualized",
+                    sensor_ids)
+    metric = sel_viz.selectbox(f"Specify the metric to be visualized",
+                    metric_columns)
+    kind = sel_viz.selectbox(f"Specify the kind of visualization",
                     ("run chart", "histogram"))
     plots = visualize_data(data_df, metric_columns, kind)
-    for plot_id, plot in plots.items():
-        st.subheader(f"Visualization for sensor id: {plot_id}")
-        st.pyplot(plot)
+
+    st.subheader(f"Visualization for sensor id:")
+    st.pyplot(plots[sensor+"_"+metric+"_"+kind])
 
 with eda:
     st.header('''
@@ -78,19 +85,22 @@ with eda:
     This section can display joint density plots, and other kinds of charts
     Correlation analysis may also be performed here.
     ''')
-    eda_type = st.selectbox(f"Specify kind of bivariate plot",
+
+    sel_column, disp_column = st.columns(2)
+
+    eda_type = sel_column.selectbox(f"Specify kind of bivariate plot",
                             ("joint density plot", "scatter plot"))
-    first = st.selectbox(f"Specify first variable",
+    first = sel_column.selectbox(f"Specify first variable",
                             metric_columns)
-    second = st.selectbox(f"Specify second variable",
+    second = sel_column.selectbox(f"Specify second variable",
                             metric_columns)
 
     if first == second:
         st.write("Warning: Different variables should be selected to see a bivariate analysis")
     else:
-        st.subheader(f"{eda_type} visualization for {second} vs {first}")
+        disp_column.subheader(f"{eda_type} visualization for {second} vs {first}")
         eda_plot = bivariate_plot(data_df, first, second, eda_type)
-        st.pyplot(eda_plot)
+        disp_column.pyplot(eda_plot)
 
 
 

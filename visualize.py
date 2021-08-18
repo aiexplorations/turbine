@@ -21,15 +21,15 @@ def visualize_data(sensor_df, metric_columns, kind):
 
         for sensor_id in unique_sensor_ids:
 
-            plots[str(metric_column) + "_" + str(sensor_id)+ "_" + "chart"] = plt.figure(figsize = (16,4))
+            plots[str(sensor_id) + "_" + str(metric_column)+ "_" + str(kind)] = plt.figure(figsize = (16,4))
             
             if kind == "run chart":
-                plt.title(f"Run chart for {metric_column} sensor id : {sensor_id}")
-                plt.plot(device_wise_df[sensor_id][metric_column])
+                plt.title(f"{kind} for {metric_column} sensor id : {sensor_id}")
+                plt.plot(device_wise_df[sensor_id][metric_column], alpha=0.5)
             elif kind == "histogram":
-                plt.title(f"Histogram for {metric_column} sensor id: {sensor_id}")
-                plt.hist(device_wise_df[sensor_id][metric_column], bins = 20)
+                plt.title(f"{kind} for {metric_column} sensor id: {sensor_id}")
+                plt.hist(device_wise_df[sensor_id][metric_column], bins = 20, alpha=0.5)
 
-    print(plots)
+    #print(plots)
     return plots
 
