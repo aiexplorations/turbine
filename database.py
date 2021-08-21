@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS sensor_data
     target REAL
 )""")
 
-SIZE = 10000
+SIZE = 1000
 
 x1 = np.random.normal(loc = 10, scale= 2, size=SIZE)
 x2 = np.random.normal(loc = 10, scale= 3, size=SIZE)
