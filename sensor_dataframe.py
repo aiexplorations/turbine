@@ -11,7 +11,7 @@ def return_df_from_db():
     sensor_df = pd.read_sql_query("SELECT * from sensor_data", connection)
 
     try:
-        print(sensor_df.head())
+        #print(sensor_df.head())
         print("Data from the sensor database successful imported into dataframe")
     except:
         raise("Error: unable to read data from database into dataframe")
@@ -43,8 +43,8 @@ def generate_stats(sensor_df, metric_columns):
     '''
     Build summary statistics for each sensor in the dataframe
     '''
-    print(pd.to_datetime(sensor_df.timestamp))
-    print("Printed time stamps")
+    #print(pd.to_datetime(sensor_df.timestamp))
+    #print("Printed time stamps")
     unique_sensor_ids = sensor_df.device_id.unique().tolist()
     device_wise_dfs = {}
     device_wise_stats = {}
@@ -71,8 +71,8 @@ def generate_stats(sensor_df, metric_columns):
         device_wise_stats.update(device_stats)
         
 
-    print ("Device wise stats")
-    print(device_wise_stats)
+    #print ("Device wise stats")
+    #print(device_wise_stats)
     #print(pd.DataFrame.from_dict(device_wise_stats, orient='index'))
     result = pd.DataFrame.from_dict(device_wise_stats, orient='index')
     result.index = result.index.rename("sensor_id")
@@ -85,19 +85,25 @@ def transform_df(sensor_df, transforms):
     '''
     Generate transformations based on the "transforms" dictionary and add these to the parent dataframe
     '''
-
+    
+    new_metric_columns = list(transforms.keys())
 
     for col, transform in transforms.items():
         if transform == "none":
             continue
         elif transform == "log":
             transformed_column = np.log(sensor_df[col].astype(float)).rename("log_"+col)
+            new_metric_columns += [transformed_column.name]
             sensor_df = sensor_df.merge(transformed_column, left_index=True, right_index=True, how="left")
         elif transform == "sqrt":
             transformed_column = np.sqrt(sensor_df[col].astype(float)).rename("sqrt_"+col)
+            new_metric_columns += [transformed_column.name]
             sensor_df = sensor_df.merge(transformed_column, left_index=True, right_index=True, how="left")
         elif transform == "exp":
             transformed_column = np.exp(sensor_df[col].astype(float)).rename("exp_"+col)
+            new_metric_columns += [transformed_column.name]
             sensor_df = sensor_df.merge(transformed_column, left_index=True, right_index=True, how="left")
     
-    return sensor_df
+    
+
+    return sensor_df, new_metric_columns
