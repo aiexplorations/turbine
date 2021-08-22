@@ -1,3 +1,4 @@
+from results import visualize_classification_results, visualize_regression_results
 from scipy.sparse import data
 from model import display_model_results, fit_model, prepare_training_data
 from typing import OrderedDict
@@ -10,6 +11,8 @@ import pandas as pd
 import pandas.api as pandasapi
 import streamlit as st
 import matplotlib.pyplot as plt
+
+
 
 # This is a script to set up a streamlit frontend UI for a data science project
 # Using streamlit components such as containers for building up the UI
@@ -29,6 +32,8 @@ transformations_container = st.container()
 feature_selection_container = st.container()
 
 model_training_container = st.container()
+
+model_results_container = st.container()
 
 model_saving_container = st.container()
 
@@ -115,7 +120,12 @@ with transformations_container:
                                       ("none", "log", "sqrt", "exp"))
         transforms.update({col: transformation})
     
-    transformed_df, new_metric_columns = transform_df(data_df, transforms)
+    na_handling_methods = ["Fill zeros where NA", "Drop NA values"]
+
+    na_handling = st.selectbox("Choose NA values handling method",
+                na_handling_methods)
+
+    transformed_df, new_metric_columns = transform_df(data_df, transforms, na_handling)
     st.subheader("Transformed dataframe (sample)")
     st.write(transformed_df.sample(10))
         
@@ -283,7 +293,6 @@ with model_training_container:
     data_params.update({"scaler_type": st.selectbox("Which scaler would you like to use?",
                                         ["Min Max Scaler", "Standard Scaler"])})
     
-    
     st.subheader("Preparation of training and test datasets")
 
     #st.write(model_params)
@@ -291,21 +300,28 @@ with model_training_container:
 
     is_data_prepared = False
 
-    if st.button("Prepare datasets"):
+    if st.checkbox("Prepare datasets"):
         st.write("Preparing training and test data...")
         prepared_data = prepare_training_data(data=transformed_df, model_params=model_params, data_params=data_params)
         st.write("Dataset prepared for model training and testing")
         is_data_prepared = True
     
+    print(is_data_prepared)
+
     is_model_trained = False
-    if is_data_prepared == True:
-        if st.button("Train model"):
-            print("Entering training loop")
-            st.write("Training model...")
-            model_training_results = fit_model(data=prepared_data, model_params=model_params, data_params=data_params)
-            st.write("Model training complete")
-            is_model_trained = True
+    if st.checkbox("Train model"):
+        if is_data_prepared == False:
+            raise(Exception("Data should be prepared, kindly click on 'prepare data' button above"))
+        
+        #print("Entering training loop")
+        st.write("Training model...")
+        model_training_results = fit_model(data=prepared_data, model_params=model_params, data_params=data_params)
+        st.write("Model training complete")
+        is_model_trained = True
     
+    print(is_model_trained)
+
+with model_results_container:
     if is_model_trained == True:
         if st.button("Model performance metrics"):
             y_true = prepared_data['yts']
@@ -313,15 +329,16 @@ with model_training_container:
             y_pred = model_training_results["model"].predict(xts)
             st.write("Results for test set")
             st.write(display_model_results(model_type=selected_model_type, y_true=y_true, y_pred=y_pred))
+        if st.button("Model visualization"):
+            # Add logic for visualization of model performance
+            # Regression - Residual Plot, Prediction Error Plot
+            # Classification - ROC-AUC, Precision-Recall Curve, Classification Report
+            if selected_model_type == "Regression":
+                results = visualize_regression_results(prepared_data, model_training_results["model"])
+                for result in results:
+                    st.pyplot(result.show())
+            elif selected_model_type == "Classification":
+                results = visualize_classification_results(prepared_data, model_training_results["model"])
+                for result in results:
+                    st.pyplot(result.show())
 
-                        
-
-                
-
-
-        
-        
-
-
-
-        
