@@ -1,4 +1,5 @@
 from operator import mod
+from numpy.core.numeric import NaN
 import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
@@ -47,6 +48,7 @@ def prepare_training_data(data, model_params, data_params):
 
 def fit_model(data, model_params, data_params):
     # Identify the model type and parameters
+    print("Fitting model")
     model_type = model_params['model_type']
     model_hyperparams = model_params['model_hyperparams']
     
@@ -144,9 +146,12 @@ def display_model_results(model_type, y_true, y_pred):
         explained_variance=metrics.explained_variance_score(y_true, y_pred)
         mean_absolute_error=metrics.mean_absolute_error(y_true, y_pred)
         mse=metrics.mean_squared_error(y_true, y_pred)
-        mean_squared_log_error=metrics.mean_squared_log_error(y_true, y_pred)
+        if min(y_pred) > 0 and min(y_true) > 0:
+            mean_squared_log_error=metrics.mean_squared_log_error(y_true, y_pred)
+        else:
+            mean_squared_log_error=NaN
         median_absolute_error=metrics.median_absolute_error(y_true, y_pred)
-        r2=metrics.r2_score(y_true, y_pred)
+        r2=metrics.r2_score(y_true, y_pred) 
 
         results = {
             'explained_variance': round(explained_variance,4),
@@ -169,6 +174,6 @@ def display_model_results(model_type, y_true, y_pred):
             "f1 score": round(f1_score, 2)
         }
         
-    return pd.DataFrame.from_dict(results)
+    return pd.DataFrame.from_records(results, index = [0])
 
 

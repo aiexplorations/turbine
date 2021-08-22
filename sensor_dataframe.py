@@ -80,11 +80,12 @@ def generate_stats(sensor_df, metric_columns):
 
 
 
-def transform_df(sensor_df, transforms):
+def transform_df(sensor_df, transforms, na_handling_method):
 
     '''
     Generate transformations based on the "transforms" dictionary and add these to the parent dataframe
     '''
+
     
     new_metric_columns = list(transforms.keys())
 
@@ -92,18 +93,18 @@ def transform_df(sensor_df, transforms):
         if transform == "none":
             continue
         elif transform == "log":
-            transformed_column = np.log(sensor_df[col].astype(float)).rename("log_"+col)
-            new_metric_columns += [transformed_column.name]
-            sensor_df = sensor_df.merge(transformed_column, left_index=True, right_index=True, how="left")
+                transformed_column = np.log(sensor_df[col].astype(float)).rename("log_"+col)            
         elif transform == "sqrt":
             transformed_column = np.sqrt(sensor_df[col].astype(float)).rename("sqrt_"+col)
-            new_metric_columns += [transformed_column.name]
-            sensor_df = sensor_df.merge(transformed_column, left_index=True, right_index=True, how="left")
         elif transform == "exp":
             transformed_column = np.exp(sensor_df[col].astype(float)).rename("exp_"+col)
+
+        if na_handling_method == "Fill zeros where NA":
             new_metric_columns += [transformed_column.name]
-            sensor_df = sensor_df.merge(transformed_column, left_index=True, right_index=True, how="left")
-    
+            sensor_df = sensor_df.merge(transformed_column.fillna(0), left_index=True, right_index=True, how="left")
+        elif na_handling_method == "Drop NA values":
+            new_metric_columns += [transformed_column.name]
+            sensor_df = sensor_df.merge(transformed_column.dropna(), left_index=True, right_index=True, how="left")
     
 
     return sensor_df, new_metric_columns
