@@ -40,7 +40,7 @@ model_saving_container = st.container()
 # Retrieve data from database and compute statistics
 
 data_df = return_df_from_db()
-metric_columns = ['x1', 'x2', 'target']
+metric_columns = ['x1', 'x2', 'y_num', 'y_cat']
 sensor_ids = data_df['device_id'].unique().tolist()
 sensor_wise_stats = generate_stats(data_df, metric_columns)
 
