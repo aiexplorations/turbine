@@ -36,6 +36,5 @@ def visualize_classification_results(data, model):
     Using Scikit Yellowbrick to visualize classification results
     '''
 
-    # top be implemented
+    # to be implemented
     pass
-    
