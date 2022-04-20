@@ -4,3 +4,4 @@ lib
 __pycache__
 # Ignore files for local build system
 pyenv.cfg
+lib64
