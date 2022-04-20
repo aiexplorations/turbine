@@ -1,0 +1,6 @@
+# Ignore folders for local build system
+bin
+lib
+__pycache__
+# Ignore files for local build system
+pyenv.cfg
