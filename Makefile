@@ -5,4 +5,5 @@ lint:
 	pylint --disable=R,C src/*.py
 
 test:
-	python -m pytest -vv --cov=frontend test_frontend.py
+	python -m unittest discover .
+	python -m pytest -vv --cov=src/database tests/test_database.py
