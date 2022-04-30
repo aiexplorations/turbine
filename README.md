@@ -6,3 +6,5 @@ Features:
 2. Frontend is built with Streamlit
 3. Pandas is used for aggregations, statistics and other features
 4. Machine learning capabilities to be built
+
+[![Python application](https://github.com/aiexplorations/turbine/actions/workflows/python-app.yml/badge.svg?branch=master)](https://github.com/aiexplorations/turbine/actions/workflows/python-app.yml)
